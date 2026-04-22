@@ -1,0 +1,25 @@
+# Environment variables — NEVER commit API keys
+.env
+
+# Vector database — auto-generated, large, not needed on GitHub
+chroma_db/
+chroma/
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# Mac system files
+.DS_Store
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# VS Code settings
+.vscode/
+
+# Virtual environments
+venv/
+env/
+.venv/
