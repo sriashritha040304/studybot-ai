@@ -1,7 +1,15 @@
 # src/ingest.py
 # Handles: PDF loading, chunking, embedding, storing in ChromaDB
 
+import os
 from typing import List
+from dotenv import load_dotenv
+
+import PyPDF2
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+# Load environment variables
+load_dotenv()
 
 
 def load_pdf(file_path: str) -> str:
@@ -14,7 +22,25 @@ def load_pdf(file_path: str) -> str:
     Returns:
         Single string containing all extracted text
     """
-    pass
+    print(f"Loading PDF: {file_path}")
+    
+    # Open the PDF file in binary read mode
+    with open(file_path, "rb") as file:
+        reader = PyPDF2.PdfReader(file)
+        
+        # Track total pages for logging
+        total_pages = len(reader.pages)
+        print(f"Total pages found: {total_pages}")
+        
+        # Extract text from every page
+        text = ""
+        for page_num, page in enumerate(reader.pages):
+            page_text = page.extract_text()
+            if page_text:
+                text += page_text + "\n"
+        
+    print(f"Total characters extracted: {len(text)}")
+    return text
 
 
 def split_into_chunks(text: str) -> List[str]:
@@ -27,7 +53,21 @@ def split_into_chunks(text: str) -> List[str]:
     Returns:
         List of text chunks, each ~1000 characters
     """
-    pass
+    print("Splitting text into chunks...")
+    
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=1000,        # Target size of each chunk in characters
+        chunk_overlap=200,      # Overlap between consecutive chunks
+        length_function=len,    # How to measure chunk size
+        separators=["\n\n", "\n", ". ", " ", ""]  # Split priority order
+    )
+    
+    chunks = splitter.split_text(text)
+    
+    print(f"Total chunks created: {len(chunks)}")
+    print(f"Average chunk size: {sum(len(c) for c in chunks) // len(chunks)} chars")
+    
+    return chunks
 
 
 def create_embeddings():
